@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .section-title {
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 12px;
+        color: #003366;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .menu-btn {
+        background-color: #0066cc;
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+
+    .menu-btn:hover {
+        background-color: #004a99;
+    }
+
+    .back-btn {
+        display: inline-block;
+        margin-top: 20px;
+        background-color: #6c757d;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .back-btn:hover {
+        background-color: #495057;
+    }
+</style>
+
+<div class="container">
+    <div class="section-title">제품 관리 - 프로그램 선택</div>
+    <div class="grid">
+        {% for program in programs %}
+            <a href="{% url 'product_list' program.pk %}" class="menu-btn">{{ program.name }}</a>
+        {% empty %}
+            <p>등록된 프로그램이 없습니다.</p>
+        {% endfor %}
+    </div>
+
+    <a href="{% url 'admin_panel' %}" class="back-btn">← 관리자 메뉴로</a>
+</div>
+{% endblock %}

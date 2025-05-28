@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .product-detail-container {
+        max-width: 480px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px 24px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-detail-container label {
+        display: block;
+        margin-top: 16px;
+        font-weight: bold;
+        color: #003366;
+        font-size: 15px;
+    }
+
+    .product-detail-container .value {
+        margin-top: 4px;
+        padding: 10px;
+        background-color: #f1f1f1;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .product-detail-container img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 10px auto;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+    }
+
+    .product-detail-container .btn-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 24px;
+    }
+
+    .product-detail-container a,
+    .product-detail-container button {
+        display: inline-block;
+        width: 48%;
+        padding: 12px;
+        font-size: 16px;
+        border: none;
+        text-align: center;
+        border-radius: 6px;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-back {
+        background-color: #6c757d;
+    }
+
+    .btn-back:hover {
+        background-color: #495057;
+    }
+
+    .btn-edit {
+        background-color: #007bff;
+    }
+
+    .btn-edit:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-delete {
+        background-color: #dc3545;
+    }
+
+    .btn-delete:hover {
+        background-color: #c82333;
+    }
+</style>
+
+<div class="product-detail-container">
+    <h3 style="text-align: center; color: #0056b3;">제품 상세 정보</h3>
+
+    {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+    {% else %}
+        <p class="value" style="text-align: center;">이미지 없음</p>
+    {% endif %}
+
+    <label>제품명</label>
+    <div class="value">{{ product.name }}</div>
+
+    <label>박스 포장 수량</label>
+    <div class="value">{{ product.box_quantity }}</div>
+
+    <label>제품 바코드</label>
+    <div class="value">{{ product.product_barcode }}</div>
+
+    <label>박스 바코드</label>
+    <div class="value">{{ product.box_barcode }}</div>
+
+    <label>생성일</label>
+    <div class="value">{{ product.created_at|date:"Y-m-d H:i" }}</div>
+
+
+    <div class="btn-group">
+        <a href="{% url 'product_update' product.pk %}" class="btn-edit">수정</a>
+        <form action="{% url 'product_delete' product.pk %}" method="post" style="width: 48%;">
+            {% csrf_token %}
+            <button type="submit" class="btn-delete">삭제</button>
+        </form>
+    </div>
+
+    <a href="{% url 'product_list' product.program.pk %}" class="btn-back" style="margin-top: 12px; display: block; text-align: center;">← 이전</a>
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .product-form-container {
+        max-width: 480px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        padding: 20px 24px;  /* 여기서 좌우 여백 추가 */
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-form-container label {
+        display: block;
+        margin-top: 16px;
+        font-weight: bold;
+        color: #003366;
+        font-size: 15px;
+    }
+
+    .product-form-container input,
+    .product-form-container select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 4px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .product-form-container button,
+    .product-form-container a.back-btn {
+        display: inline-block;
+        width: 48%;
+        padding: 12px;
+        margin-top: 24px;
+        font-size: 16px;
+        border: none;
+        text-align: center;
+        border-radius: 6px;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .product-form-container button {
+        background-color: #007bff;
+    }
+
+    .product-form-container button:hover {
+        background-color: #0056b3;
+    }
+
+    .product-form-container a.back-btn {
+        background-color: #6c757d;
+        text-align: center;
+    }
+
+    .product-form-container a.back-btn:hover {
+        background-color: #495057;
+    }
+</style>
+
+<div class="product-form-container">
+    <h3 style="text-align: center; color: #0056b3;">
+        제품 {{ form.instance.pk|yesno:"수정,등록" }}
+    </h3>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label for="{{ form.program.id_for_label }}">프로그램명</label>
+        {{ form.program }}
+
+        <label for="{{ form.name.id_for_label }}">제품명</label>
+        {{ form.name }}
+
+        <label for="{{ form.box_quantity.id_for_label }}">박스 포장 수량</label>
+        {{ form.box_quantity }}
+
+        <label for="{{ form.product_barcode.id_for_label }}">제품 바코드</label>
+        {{ form.product_barcode }}
+
+        <label for="{{ form.box_barcode.id_for_label }}">박스 바코드</label>
+        {{ form.box_barcode }}
+
+        <label for="{{ form.image.id_for_label }}">제품 이미지</label>
+        {{ form.image }}
+
+        <div style="display: flex; justify-content: space-between;">
+            <a href="{% url 'product_list' form.program.value %}" class="back-btn">← 이전</a>
+            <button type="submit">저장</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
