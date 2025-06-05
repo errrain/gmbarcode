@@ -44,12 +44,15 @@
         .title-bar {
             background-color: #00A7E0;
             color: white;
-            text-align: center;
-            padding: 16px 0 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 12px 12px 12px;
             font-weight: bold;
             font-size: 1.35em;
             letter-spacing: 0.07em;
             margin-bottom: 8px;
+            position: relative;
         }
         .product-grid {
             display: flex;
@@ -104,6 +107,54 @@
             .product-card { width: 96%; min-width: 80px; }
             .product-card img { height: 70px; }
         }
+
+            .back-btn {
+                background: #1976d2;
+                color: #fff;
+                border: none;
+                border-radius: 8px;
+                padding: 8px 18px;
+                font-size: 14px;    /* 2pt 감소 적용 (16px 기준에서 -2pt) */
+                font-weight: bold;
+                cursor: pointer;
+                box-shadow: 0 2px 8px rgba(25, 118, 210, 0.12);
+                transition: background 0.2s, transform 0.1s;
+            }
+            .back-btn:hover {
+                background: #135ba1;
+                transform: translateY(-2px) scale(1.04);
+            }
+            .title-center {
+                flex: 1 1 auto;
+                text-align: center;
+                font-weight: bold;
+                font-size: 1.05em;
+                letter-spacing: 0.07em;
+                position: absolute;
+                left: 0;
+                right: 0;
+                margin: auto;
+                pointer-events: none; /* 텍스트는 클릭 불가로 처리 */
+            }
+            .title-bar .back-btn {
+                z-index: 1; /* 버튼이 항상 보이도록 */
+            }
+            .right-placeholder {
+                width: 90px; /* back-btn의 크기만큼 공간 확보 */
+            }
+            @media (max-width: 480px) {
+                .title-bar {
+                    font-size: 1.05em;
+                    padding: 10px 8px 8px 8px;
+                }
+                .back-btn {
+                    padding: 5px 12px;
+                    font-size: 0.95em;
+                }
+                .right-placeholder {
+                    width: 65px;
+                }
+            }
     </style>
 </head>
 <body>
@@ -117,7 +168,9 @@
     </div>
 
     <div class="title-bar">
-        제품 목록
+        <button type="button" class="back-btn" onclick="history.back();">← 이전</button>
+        <span class="title-center">제품 목록</span>
+        <span class="right-placeholder"></span>
     </div>
     <div class="product-grid">
         {% for product in products %}
