@@ -40,3 +40,26 @@ def save_error_log(request):
         )
         return JsonResponse({"result": "ok"})
     return JsonResponse({"result": "invalid"}, status=400)
+
+
+@csrf_exempt  # Ajax 전용, CSRF 토큰이 없는 경우 대비
+def save_success_log(request):
+    if request.method == "POST":
+        product_id = request.POST.get("product_id")
+        check_type = request.POST.get("check_type")  # 'mix' or 'box'
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return JsonResponse({"result": "not_found"}, status=404)
+
+        user = request.user if request.user.is_authenticated else None
+
+        BarcodeCheckLog.objects.create(
+            check_type=check_type,
+            product=product,
+            result='정상',  # 기존 '오류'와 구분
+            user=user
+        )
+        return JsonResponse({"result": "ok"})
+
+    return JsonResponse({"result": "invalid"}, status=400)

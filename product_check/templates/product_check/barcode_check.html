@@ -320,6 +320,7 @@
     <!-- 사운드 리소스 추가 -->
     <audio id="soundSuccess" src="{% static 'sounds/ok.mp3' %}"></audio>
     <audio id="soundError" src="{% static 'sounds/ng.mp3' %}"></audio>
+    <audio id="soundNext" src="{% static 'sounds/next.mp3' %}"></audio>
 
     <!-- 스크립트 -->
     <script>
@@ -390,6 +391,8 @@
                 scanCount.innerText = scanValue + " EA";
                 flashBlink("#38c172", "#fff", "정상");
                 if (scanValue === boxQuantity) {
+                    document.getElementById('soundNext').play();  // ✅ NEXT.MP3 재생
+                    sendSuccessLog("mix");                       // ✅ 성공 로그 추가
                     setTimeout(resetAll, 3000);
                 }
             } else {
@@ -445,6 +448,8 @@
             e.preventDefault();
             if (isBoxProductOK && boxBarcodeInput.value.trim() === boxBarcode) {
                 flashBlink("#38c172", "#fff", "정상");
+                document.getElementById('soundNext').play();  // ✅ NEXT.MP3 재생
+                sendSuccessLog("box");                        // ✅ 성공 로그 추가
             } else {
                 flashBlink("#ff2222", "#fff", "오류");
                 sendErrorLog("box");
@@ -484,6 +489,19 @@
             body: `product_id=${productId}&check_type=${checkType}`
         });
     }
+
+    // Ajax 성공 로그 저장
+    function sendSuccessLog(checkType) {
+        fetch("/product-check/save-success-log/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": getCookie('csrftoken')
+            },
+            body: `product_id=${productId}&check_type=${checkType}`
+        });
+    }
+
     // CSRF 토큰
     function getCookie(name) {
         let cookieValue = null;

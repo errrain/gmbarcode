@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'product_program',
     'product_info',
     'product_check',
+    'check_log_viewer',
 ]
 
 

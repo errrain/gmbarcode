@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>서경화학 - 작업 이력 관리</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: '맑은 고딕', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .top-bar {
+            background-color: #0066cc;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar .title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 24px;
+            margin-bottom: 12px;
+            color: #003366;
+        }
+
+        form {
+            background-color: white;
+            padding: 16px;
+            border-radius: 6px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"], input[type="date"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            font-size: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background-color: #005bb5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            font-size: 14px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 6px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #003366;
+            color: white;
+        }
+
+        .empty {
+            padding: 10px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 16px;
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background-color: #495057;
+        }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 140px;
+            flex: 1;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .filter-group, .filter-actions {
+                flex: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="top-bar">
+    <div class="title">서경화학 - 작업 이력 관리</div>
+    <div>
+        관리자: {{ request.user.full_name }}
+        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <a href="{% url 'admin_panel' %}" class="back-btn">← 관리자 메뉴로</a>
+
+    <div class="section-title">작업 이력 조회</div>
+
+    <!-- 🔍 검색 조건 -->
+    <form method="get">
+        <!-- 1번째 줄 -->
+        <div class="filter-row">
+            <div class="filter-group">
+                <label>검사 결과</label>
+                <select name="result">
+                    <option value="">-- 모두 --</option>
+                    <option value="정상" {% if request.GET.result == '정상' %}selected{% endif %}>정상</option>
+                    <option value="오류" {% if request.GET.result == '오류' %}selected{% endif %}>오류</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>시작일</label>
+                <input type="date" name="start_date" value="{{ request.GET.start_date }}">
+            </div>
+            <div class="filter-group">
+                <label>종료일</label>
+                <input type="date" name="end_date" value="{{ request.GET.end_date }}">
+            </div>
+        </div>
+
+        <!-- 2번째 줄 -->
+        <div class="filter-row">
+            <div class="filter-group">
+                <label>제품명</label>
+                <input type="text" name="product" value="{{ request.GET.product }}" placeholder="제품명 입력">
+            </div>
+            <div class="filter-group">
+                <label>작업자</label>
+                <input type="text" name="user" value="{{ request.GET.user }}" placeholder="사용자 이름">
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="submit-btn" style="background:#007bff;">검색</button>
+                <a href="?result={{ request.GET.result }}&product={{ request.GET.product }}&user={{ request.GET.user }}&start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}&download=xls"
+                   class="submit-btn" style="background:#28a745;">엑셀 다운로드</a>
+            </div>
+        </div>
+    </form>
+
+    <!-- 📋 검사 로그 테이블 -->
+    <table>
+        <thead>
+        <tr>
+            <th>점검시간</th>
+            <th>점검구분</th>
+            <th>제품</th>
+            <th>작업자</th>
+            <th>결과</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if logs %}
+            {% for log in logs %}
+                <tr>
+                    <td>{{ log.checked_at|date:"Y-m-d H:i:s" }}</td>
+                    <td>{{ log.get_check_type_display }}</td>
+                    <td>{{ log.product.name }}</td>
+                    <td>{{ log.user.full_name|default:log.user.username }}</td>
+                    <td>{{ log.result }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr><td colspan="5" class="empty">검색 결과가 없습니다.</td></tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+    <!-- 페이지네이션 -->
+    <div style="margin-top: 20px; text-align: center;">
+        {% if page_obj.has_previous %}
+            <a href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">← 이전</a>
+        {% endif %}
+
+        <span style="margin: 0 10px;">
+            페이지 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.next_page_number }}">다음 →</a>
+        {% endif %}
+    </div>
+
+</div>
+</body>
+</html>

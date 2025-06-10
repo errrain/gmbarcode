@@ -7,6 +7,7 @@ class Product(models.Model):
     name = models.CharField(max_length=200, verbose_name="제품명")
     image = models.ImageField(upload_to='product_images/', null=True, blank=True, verbose_name="제품 이미지")
     box_quantity = models.PositiveIntegerField(verbose_name="박스 포장 수량")
+    pallet_box_quantity = models.PositiveIntegerField(null=True, blank=True, verbose_name="파레트 적재 박스 수량")  # ✅ 추가
     product_barcode = models.CharField(max_length=100, verbose_name="제품 바코드")
     box_barcode = models.CharField(max_length=100, verbose_name="포장 박스 바코드")
 
