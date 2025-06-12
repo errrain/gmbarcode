@@ -25,6 +25,7 @@ urlpatterns = [
     path('product-program/', include('product_program.urls')),
     path('product-info/', include('product_info.urls')),
     path('check-log/', include('check_log_viewer.urls')),
+    path('shipping/', include('shipping.urls', namespace='shipping')),
 
 ]
 

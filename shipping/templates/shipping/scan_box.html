@@ -1,0 +1,265 @@
+<!-- templates/shipping/scan_box.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>출하 점검 진행</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: '맑은 고딕', sans-serif;
+            background: #f9f9f9;
+            max-width: 400px;
+            margin: auto;
+        }
+        .top-bar {
+            background-color: #006AB3;
+            color: white;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .logout-btn {
+            background-color: #ff4d4f;
+            color: white;
+            padding: 5px 18px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+        .title-bar {
+            background-color: #00A7E0;
+            color: white;
+            padding: 16px 12px;
+            font-size: 1.3em;
+            font-weight: bold;
+            text-align: center;
+        }
+        .main-content {
+            padding: 20px 10px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        .count-box {
+            font-weight: bold;
+            font-size: 1.1em;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 1em;
+            font-weight: bold;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+        .info-table th, .info-table td {
+            padding: 8px 10px;
+            border: 1px solid #b7d2ec;
+            text-align: left;
+        }
+        .info-table th {
+            background-color: #e0efff;
+            color: #003366;
+            font-weight: bold;
+        }
+        .info-table td {
+            background-color: #f8fbfd;
+            color: #003366;
+        }
+        .title-bar .back-btn {
+            z-index: 1;
+        }
+        .back-btn {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 18px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.12);
+            transition: background 0.2s, transform 0.1s;
+        }
+        .back-btn:hover {
+            background: #135ba1;
+            transform: translateY(-2px) scale(1.04);
+        }
+        .right-placeholder {
+            width: 90px;
+        }
+        @media (max-width: 480px) {
+            .title-bar {
+                font-size: 1.05em;
+                padding: 10px 8px 8px 8px;
+            }
+            .back-btn {
+                padding: 5px 12px;
+                font-size: 0.95em;
+            }
+            .right-placeholder {
+                width: 65px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div>서경화학 제품 점검</div>
+        <div>
+            작업자: {{ request.user.full_name }}
+            <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="title-bar">
+        <button type="button" class="back-btn" onclick="history.back();">← 이전</button>
+        <span class="title-center">출하 점검 진행</span>
+        <span class="right-placeholder"></span>
+    </div>
+    <div class="main-content">
+        <table class="info-table">
+            <tr><th>제품명</th><td>{{ session.product.name }}</td></tr>
+            <tr><th>박스 바코드</th><td id="boxBarcodeVal">{{ session.product.box_barcode }}</td></tr>
+            <tr><th>파레트 기준 박스 수량</th><td>{{ session.product.pallet_box_quantity }}</td></tr>
+        </table>
+
+        <label for="scanned_code">바코드 스캔</label>
+        <input type="text" id="scanned_code" autofocus onblur="this.focus();">
+
+        <div class="count-box">
+            현재 박스 수량: <span id="boxCount">{{ session.box_count }}</span> /
+            파레트 수량: <span id="palletCount">{{ session.pallet_count }}</span>
+        </div>
+        <!-- ✅ 피드백 표시 영역 -->
+        <div id="feedbackArea" style="
+            margin-top: 12px;
+            padding: 12px;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-align: center;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        "></div>
+        <br/>
+        <form id="shippingSaveForm">
+            {% csrf_token %}
+            <input type="hidden" name="box_count" id="hiddenBoxCount">
+            <input type="hidden" name="pallet_count" id="hiddenPalletCount">
+            <button type="submit" class="submit-btn">출하 점검 저장</button>
+        </form>
+    </div>
+
+    <!-- 사운드 -->
+    <audio id="soundSuccess" src="{% static 'sounds/ok.mp3' %}" preload="auto"></audio>
+    <audio id="soundError" src="{% static 'sounds/ng.mp3' %}" preload="auto"></audio>
+
+
+<script>
+    const input = document.getElementById('scanned_code');
+    const boxCountEl = document.getElementById('boxCount');
+    const palletCountEl = document.getElementById('palletCount');
+    const boxBarcode = document.getElementById('boxBarcodeVal').innerText.trim();
+    const feedbackArea = document.getElementById('feedbackArea');
+    const soundSuccess = document.getElementById('soundSuccess');
+    const soundError = document.getElementById('soundError');
+
+    let boxCount = parseInt(boxCountEl.innerText);
+    let palletCount = parseInt(palletCountEl.innerText);
+    const palletBoxQuantity = parseInt("{{ session.product.pallet_box_quantity }}");
+
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const value = input.value.trim();
+            if (!value) return;
+
+            if (value === boxBarcode) {
+                boxCount += 1;
+                boxCountEl.innerText = boxCount;
+
+                if (boxCount % palletBoxQuantity === 0) {
+                    palletCount += 1;
+                    palletCountEl.innerText = palletCount;
+                }
+
+                showFeedback("정상", "#38c172", "#fff");
+                soundSuccess.currentTime = 0;
+                soundSuccess.play().catch(e => console.warn("Success Sound Blocked", e));
+            } else {
+                showFeedback("오류", "#ff4d4f", "#fff");
+                soundError.currentTime = 0;
+                soundError.play().catch(e => console.warn("Error Sound Blocked", e));
+            }
+
+            input.value = '';
+            input.focus();
+        }
+    });
+
+    function showFeedback(text, bgColor, color) {
+        feedbackArea.innerText = text;
+        feedbackArea.style.backgroundColor = bgColor;
+        feedbackArea.style.color = color;
+
+        setTimeout(() => {
+            feedbackArea.innerText = '';
+            feedbackArea.style.backgroundColor = '';
+        }, 1500);
+    }
+
+    document.getElementById("shippingSaveForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        document.getElementById("hiddenBoxCount").value = boxCount;
+        document.getElementById("hiddenPalletCount").value = palletCount;
+
+        fetch("{% url 'shipping:save_shipping_log' session.id %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams(new FormData(this))
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "ok") {
+                alert(data.message);
+                history.back();
+            } else {
+                alert("저장 실패: " + data.message);
+            }
+        })
+        .catch(err => {
+            alert("서버 오류 발생");
+            console.error(err);
+        });
+    });
+</script>
+
+
+
+</body>
+</html>

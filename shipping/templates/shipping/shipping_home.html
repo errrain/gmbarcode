@@ -1,0 +1,208 @@
+<!-- shipping_home.html-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>출하 점검</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+            background: #f9f9f9;
+            max-width: 400px;
+            margin: auto;
+        }
+        .top-bar {
+            background-color: #006AB3;
+            color: white;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .top-bar .ci {
+            font-size: 1em;
+            font-weight: bold;
+        }
+        .top-bar .user-info {
+            font-size: 0.97em;
+        }
+        .logout-btn {
+            background-color: #ff4d4f;
+            color: white;
+            padding: 5px 18px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 1em;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .title-bar {
+            background-color: #00A7E0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 12px 12px 12px;
+            font-weight: bold;
+            font-size: 1.35em;
+            letter-spacing: 0.07em;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 18px 8px 30px 8px;
+        }
+        .input-area {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .input-area input[type="text"] {
+            width: 92%;
+            max-width: 220px;
+            font-size: 1.1em;
+            padding: 7px;
+            border-radius: 6px;
+            border: 1.2px solid #b7d2ec;
+        }
+        .input-area button {
+            padding: 8px 14px;
+            font-size: 1em;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .product-info {
+            background-color: #ffffff;
+            border: 1px solid #b7d2ec;
+            padding: 15px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 360px;
+        }
+        .product-info p {
+            font-size: 1em;
+            margin: 6px 0;
+            color: #003366;
+        }
+        .product-info button, .product-info a {
+            margin-top: 10px;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .product-info button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+        .product-info a {
+            background-color: #888;
+            color: white;
+        }
+        .title-center {
+            flex: 1 1 auto;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.05em;
+            letter-spacing: 0.07em;
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin: auto;
+            pointer-events: none;
+        }
+        .title-bar .back-btn {
+            z-index: 1;
+        }
+        .back-btn {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 18px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.12);
+            transition: background 0.2s, transform 0.1s;
+        }
+        .back-btn:hover {
+            background: #135ba1;
+            transform: translateY(-2px) scale(1.04);
+        }
+        .right-placeholder {
+            width: 90px;
+        }
+        @media (max-width: 480px) {
+            .title-bar {
+                font-size: 1.05em;
+                padding: 10px 8px 8px 8px;
+            }
+            .back-btn {
+                padding: 5px 12px;
+                font-size: 0.95em;
+            }
+            .right-placeholder {
+                width: 65px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="ci">서경화학 제품 점검</div>
+        <div class="user-info">
+            작업자: {{ request.user.full_name }}
+            <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+        </div>
+    </div>
+    <div class="title-bar">
+        <button type="button" class="back-btn" onclick="history.back();">← 이전</button>
+        <span class="title-center">출하 점검</span>
+        <span class="right-placeholder"></span>
+    </div>
+
+    <div class="main-content">
+
+        <div class="input-area">
+            <form method="get">
+                <label>박스 바코드 스캔 또는 입력</label><br>
+                <input type="text" name="box_barcode" value="{{ box_barcode|default:'' }}" autofocus required>
+                <button type="submit">검색</button>
+            </form>
+        </div>
+
+        {% if product %}
+        <div class="product-info">
+            <p><strong>제품명:</strong> {{ product.name }}</p>
+            <p><strong>제품 바코드:</strong> {{ product.product_barcode }}</p>
+            <p><strong>박스 바코드:</strong> {{ product.box_barcode }}</p>
+            <p><strong>박스 포장 수량:</strong> {{ product.box_quantity }}</p>
+            <p><strong>파레트 박스 수량:</strong> {{ product.pallet_box_quantity }}</p>
+
+            <form method="post" action="{% url 'shipping:start_check' %}">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <button type="submit">검사시작</button>
+                <a href="{% url 'shipping:shipping_home' %}">초기화</a>
+            </form>
+        </div>
+        {% endif %}
+
+    </div>
+</body>
+</html>
