@@ -1,101 +1,164 @@
-{% extends "base.html" %}
-
-{% block content %}
-<style>
-    .product-form-container {
-        max-width: 480px;
-        margin: 0 auto;
-        background-color: #fff;
-        padding: 20px;
-        padding: 20px 24px;  /* 여기서 좌우 여백 추가 */
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .product-form-container label {
-        display: block;
-        margin-top: 16px;
-        font-weight: bold;
-        color: #003366;
-        font-size: 15px;
-    }
-
-    .product-form-container input,
-    .product-form-container select {
-        width: 100%;
-        padding: 10px;
-        margin-top: 4px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 14px;
-    }
-
-    .product-form-container button,
-    .product-form-container a.back-btn {
-        display: inline-block;
-        width: 48%;
-        padding: 12px;
-        margin-top: 24px;
-        font-size: 16px;
-        border: none;
-        text-align: center;
-        border-radius: 6px;
-        color: white;
-        cursor: pointer;
-        text-decoration: none;
-    }
-
-    .product-form-container button {
-        background-color: #007bff;
-    }
-
-    .product-form-container button:hover {
-        background-color: #0056b3;
-    }
-
-    .product-form-container a.back-btn {
-        background-color: #6c757d;
-        text-align: center;
-    }
-
-    .product-form-container a.back-btn:hover {
-        background-color: #495057;
-    }
-</style>
-
-<div class="product-form-container">
-    <h3 style="text-align: center; color: #0056b3;">
-        제품 {{ form.instance.pk|yesno:"수정,등록" }}
-    </h3>
-
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-
-        <label for="{{ form.program.id_for_label }}">프로그램명</label>
-        {{ form.program }}
-
-        <label for="{{ form.name.id_for_label }}">제품명</label>
-        {{ form.name }}
-
-        <label for="{{ form.pallet_box_quantity.id_for_label }}">파레트 적재 박스 수량</label>
-        {{ form.pallet_box_quantity }}
-
-        <label for="{{ form.box_quantity.id_for_label }}">박스 포장 수량</label>
-        {{ form.box_quantity }}
-
-        <label for="{{ form.product_barcode.id_for_label }}">제품 바코드</label>
-        {{ form.product_barcode }}
-
-        <label for="{{ form.box_barcode.id_for_label }}">박스 바코드</label>
-        {{ form.box_barcode }}
-
-        <label for="{{ form.image.id_for_label }}">제품 이미지</label>
-        {{ form.image }}
-
-        <div style="display: flex; justify-content: space-between;">
-            <a href="{% url 'product_list' form.program.value %}" class="back-btn">← 이전</a>
-            <button type="submit">저장</button>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>서경화학 - 제품 등록</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: '맑은 고딕', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .top-bar {
+            background-color: #0066cc;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar .ci {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .logout-btn {
+            background-color: #f44336;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .product-form-container {
+            max-width: 560px;
+            margin: 32px auto 0 auto;
+            background-color: #fff;
+            padding: 32px 36px 28px 36px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.10);
+        }
+        .product-form-container h3 {
+            text-align: center;
+            color: #0056b3;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 28px;
+        }
+        .product-form-container label {
+            display: block;
+            margin-top: 22px;
+            font-weight: bold;
+            color: #003366;
+            font-size: 16px;
+            letter-spacing: 0.02em;
+        }
+        .product-form-container input,
+        .product-form-container select {
+            width: 100%;
+            padding: 13px 12px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+            background: #f9f9f9;
+            color: #222;
+        }
+        .product-form-container input[type="file"] {
+            padding: 10px 0 10px 0;
+            background: #fff;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 32px;
+        }
+        .btn-save,
+        .btn-back {
+            flex: 1 1 0;
+            padding: 14px 0;
+            font-size: 17px;
+            border-radius: 7px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            transition: background 0.18s;
+            box-shadow: 0 0 5px rgba(0,0,0,0.07);
+            width: 100%;
+            display: block;
+        }
+        .btn-save {
+            background-color: #0066cc;
+        }
+        .btn-save:hover {
+            background-color: #005bb5;
+        }
+        .btn-back {
+            background-color: #6c757d;
+        }
+        .btn-back:hover {
+            background-color: #495057;
+        }
+        @media (max-width: 600px) {
+            .product-form-container {
+                max-width: 100vw;
+                padding: 6vw 3vw 5vw 3vw;
+                border-radius: 0;
+            }
+            .btn-save, .btn-back {
+                font-size: 14px;
+                padding: 10px 0;
+                border-radius: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="ci">서경화학 - 제품 등록</div>
+        <div>
+            관리자: {{ request.user.full_name }}
+            <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
         </div>
-    </form>
-</div>
-{% endblock %}
+    </div>
+
+    <div class="product-form-container">
+        <h3>제품 {{ form.instance.pk|yesno:"수정,등록" }}</h3>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <label for="{{ form.program.id_for_label }}">프로그램명</label>
+            {{ form.program }}
+
+            <label for="{{ form.name.id_for_label }}">제품명</label>
+            {{ form.name }}
+
+            <label for="{{ form.pallet_box_quantity.id_for_label }}">파레트 적재 박스 수량</label>
+            {{ form.pallet_box_quantity }}
+
+            <label for="{{ form.box_quantity.id_for_label }}">박스 포장 수량</label>
+            {{ form.box_quantity }}
+
+            <label for="{{ form.product_barcode.id_for_label }}">제품 바코드</label>
+            {{ form.product_barcode }}
+
+            <label for="{{ form.box_barcode.id_for_label }}">박스 바코드</label>
+            {{ form.box_barcode }}
+
+            <label for="{{ form.image.id_for_label }}">제품 이미지</label>
+            {{ form.image }}
+
+            <div class="btn-group">
+                <a href="{% url 'product_list' form.program.value %}" class="btn-back">← 목록으로</a>
+                <button type="submit" class="btn-save">저장</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,26 +1,102 @@
+<!-- templates/login.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>로그인</title>
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding-top: 50px; }
-        form { display: flex; flex-direction: column; width: 300px; }
-        input { padding: 10px; margin: 10px 0; font-size: 1.1em; }
-        button { padding: 10px; font-size: 1.2em; background-color: #1e90ff; color: white; border: none; }
-        .error { color: red; margin-top: 10px; }
+        body {
+            font-family: '맑은 고딕', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f1f3f5;
+            margin: 0;
+        }
+
+        .login-box {
+            background: white;
+            padding: 30px 24px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 360px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .login-box img {
+            width: 50%;
+            max-width: 160px;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            margin: 6px 0;
+            color: #003366;
+            font-size: 1.3em;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            padding: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+
+        @media (max-width: 400px) {
+            h2 {
+                font-size: 1.1em;
+            }
+        }
     </style>
 </head>
 <body>
-    <h2>로그인</h2>
-    <form method="post">
-        {% csrf_token %}
-        <input type="text" name="username" placeholder="아이디" required>
-        <input type="password" name="password" placeholder="비밀번호" required>
-        <button type="submit">로그인</button>
-        {% if error %}
-        <div class="error">{{ error }}</div>
-        {% endif %}
-    </form>
+    <div class="login-box">
+        <img src="{% static 'img/ci.png' %}" alt="CI">
+        <h2>서경화학</h2>
+        <h2>제품 점검 프로그램</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="아이디" required>
+            <input type="password" name="password" placeholder="비밀번호" required>
+            <button type="submit">로그인</button>
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
+        </form>
+    </div>
 </body>
 </html>

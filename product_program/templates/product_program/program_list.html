@@ -136,11 +136,8 @@
         <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
     </div>
 </div>
-
 <div class="container">
-
     <a href="{% url 'admin_panel' %}" class="back-btn">← 관리자 메뉴로</a>
-
     <div class="section-title">신규 프로그램 등록</div>
     <form method="post">
         {% csrf_token %}
@@ -151,7 +148,6 @@
         {{ form.description }}
         <button type="submit" class="submit-btn" id="submit-btn">등록</button>
     </form>
-
     <div class="section-title">등록된 프로그램 목록</div>
     <table>
         <thead>
@@ -185,7 +181,6 @@
         </tbody>
     </table>
 </div>
-
 <script>
     function editProgram(id, name, description) {
         document.getElementById('id_name').value = name;
@@ -194,6 +189,5 @@
         document.getElementById('submit-btn').innerText = '수정';
     }
 </script>
-
 </body>
 </html>

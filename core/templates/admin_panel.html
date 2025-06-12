@@ -2,103 +2,105 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>관리자 메뉴</title>
+    <title>서경화학 - 관리자 메뉴</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        html, body {
+        body {
+            font-family: '맑은 고딕', sans-serif;
             margin: 0;
             padding: 0;
-            font-family: sans-serif;
-            background: #f9f9f9;
-            max-width: 360px;
-            margin: auto;
+            background-color: #f5f5f5;
         }
-
         .top-bar {
-            background-color: #006AB3;
+            background-color: #0066cc;
             color: white;
-            padding: 10px;
+            padding: 12px 16px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
         }
-
         .top-bar .ci {
-            font-size: 0.9em;
+            font-size: 18px;
             font-weight: bold;
         }
-
-        .top-bar .user-info {
-            font-size: 0.8em;
-        }
-
         .logout-btn {
-            background-color: #ff4d4f;
-            color: white;
-            padding: 5px 10px;
+            background-color: #f44336;
             border: none;
+            color: white;
+            padding: 6px 12px;
+            text-decoration: none;
             border-radius: 4px;
-            text-decoration: none;
-            font-size: 0.8em;
+            font-size: 14px;
         }
-
-        .title-bar {
-            background-color: #00A7E0;
-            color: white;
-            text-align: center;
-            padding: 10px;
+        .container {
+            padding: 20px;
+            max-width: 430px;
+            margin: 0 auto;
+        }
+        .section-title {
             font-weight: bold;
-            font-size: 1.2em;
+            font-size: 16px;
+            margin-bottom: 24px;
+            color: #003366;
+            text-align: left;
         }
-
         .grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            padding: 20px;
-            justify-items: center;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: stretch;
         }
-
         .menu-btn {
-            background: #006AB3;
+            background: #0066cc;
             color: white;
-            font-size: 1.2em;
-            padding: 20px;
-            border-radius: 12px;
+            font-size: 16px;
+            padding: 16px;
+            border-radius: 8px;
             border: none;
-            width: 200px;
-            box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        a.menu-btn {
-            display: block;
+            box-shadow: 0 0 5px rgba(0,0,0,0.07);
             text-align: center;
             text-decoration: none;
+            font-weight: bold;
+            transition: background 0.2s;
         }
-
+        .menu-btn:hover {
+            background: #005bb5;
+        }
+        @media (max-width: 480px) {
+            .top-bar .ci {
+                font-size: 16px;
+            }
+            .logout-btn {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+            .container {
+                padding: 12px;
+            }
+            .menu-btn {
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
-
     <div class="top-bar">
-        <div class="ci">서경화학 관리자</div>
-        <div class="user-info">
+        <div class="ci">서경화학 - 관리자 메뉴</div>
+        <div>
             관리자: {{ request.user.full_name }}
             <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
         </div>
     </div>
-
-    <div class="title-bar">
-        관리자 메뉴
+    <div class="container">
+        <div class="section-title">관리자 주요 메뉴</div>
+        <div class="grid">
+            <a href="{% url 'program_list' %}" class="menu-btn">프로그램 관리</a>
+            <a href="{% url 'select_program' %}" class="menu-btn">제품 관리</a>
+            <a href="{% url 'check_log_viewer:log_list' %}" class="menu-btn">작업 이력 관리</a>
+            <a href="{% url 'shipping:shipping_home' %}" class="menu-btn">출하 관리</a>
+            <a href="{% url 'shipping:shipping_log_list' %}" class="menu-btn">출하 이력 관리</a>
+        </div>
     </div>
-
-    <div class="grid">
-        <a href="{% url 'program_list' %}" class="menu-btn">프로그램 관리</a>
-        <a href="{% url 'select_program' %}" class="menu-btn">제품 관리</a>
-        <a href="{% url 'check_log_viewer:log_list' %}" class="menu-btn">작업 이력 관리</a>
-        <a href="{% url 'shipping:shipping_home' %}" class="menu-btn">출하 관리</a>
-        <a href="{% url 'shipping:shipping_log_list' %}" class="menu-btn">출하 이력 관리</a>
-    </div>
-
 </body>
 </html>
