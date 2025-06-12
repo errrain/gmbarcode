@@ -105,6 +105,26 @@
     </div>
     <div class="program-card">
         <div class="program-title">프로그램 선택</div>
+         <!-- 📌 상단 바코드 입력 영역 추가 -->
+        <div style="padding: 10px 10px;">
+                <input
+                    type="text"
+                    id="barcodeInput"
+                    placeholder="제품 바코드를 스캔하세요"
+                    style="
+                        width: 100%;
+                        font-size: 18px;
+                        font-weight: bold;
+                        padding: 18px 14px;
+                        border-radius: 11px;
+                        border: 1px solid #ccc;
+                        box-sizing: border-box;
+                    "
+                    autofocus>
+        </div>
+        {% if error %}
+            <div style="color: red; text-align: center; margin-bottom: 10px;">{{ error }}</div>
+        {% endif %}
         <div class="program-list">
             {% for program in programs %}
                 <a href="{% url 'product_check:product_list' program.id %}" class="program-btn">
@@ -113,4 +133,34 @@
         </div>
     </div>
 </body>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("barcodeInput");
+
+    input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+
+            const barcode = input.value.trim();
+            if (!barcode) return;
+
+            fetch(`/product-check/barcode-lookup/?barcode=${barcode}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = `/product-check/barcode-check/${data.product_id}/`;
+                    } else {
+                        alert(data.message || "해당 바코드를 가진 제품을 찾을 수 없습니다.");
+                    }
+                })
+                .catch(err => {
+                    console.error("Error:", err);
+                    alert("서버 오류가 발생했습니다.");
+                });
+
+            input.value = '';
+        }
+    });
+});
+</script>
 </html>

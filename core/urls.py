@@ -1,5 +1,6 @@
 #core/urls.py
 from django.urls import path, include
+from . import views
 from .views import (
     login_view,
     logout_view,
@@ -17,4 +18,6 @@ urlpatterns = [
     path('programs/', include('product_program.urls')),
     path('product-info/', include('product_info.urls')),
     path('product-check/', include('product_check.urls')),
+    path('barcode-scan/', views.barcode_redirect_view, name='barcode_redirect'),
+    path('product-check/barcode-lookup/', views.barcode_lookup_api, name='barcode_lookup'),
 ]
