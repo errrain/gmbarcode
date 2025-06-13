@@ -125,6 +125,9 @@
         </div>
     </div>
     <div class="container">
+        <div class="section-title">
+        <a href="{% url 'admin_panel' %}" class="back-btn">← 관리자 메뉴로</a>
+        </div>
         <div class="section-title">제품 관리 - 프로그램 선택</div>
         <div class="grid">
             {% for program in programs %}
@@ -133,7 +136,6 @@
                 <div class="empty-msg">등록된 프로그램이 없습니다.</div>
             {% endfor %}
         </div>
-        <a href="{% url 'admin_panel' %}" class="back-btn">← 관리자 메뉴로</a>
     </div>
 </body>
 </html>

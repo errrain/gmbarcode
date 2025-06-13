@@ -281,7 +281,7 @@
             <div style="margin-bottom:4px;">제품 바코드 스캔</div>
             <input id="boxProductInput" type="text" autocomplete="off">
             <button onclick="resetBoxProductInput()" style="margin:4px 0 10px 3px;padding:2px 14px;">reset</button>
-            <div style="margin-bottom:7px;">박스 바코드 스캔</div>
+            <div style="margin-bottom:7px;">포장 박스 제품 바코드 스캔</div>
             <input id="boxBarcodeInput" type="text" autocomplete="off">
             <button onclick="resetBoxBarcodeInput()" style="margin:4px 0 10px 3px;padding:2px 14px;">reset</button>
         </div>
@@ -412,26 +412,29 @@
         }
     };
 
-    // 포장 점검 - 박스 바코드 엔터
-    boxBarcodeInput.onkeydown = function(e) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            if (isBoxProductOK && boxBarcodeInput.value.trim() === boxBarcode) {
-                flashBlink("#38c172", "#fff", "정상");
-                document.getElementById('soundNext').play();  // ✅ NEXT.MP3 재생
-                sendSuccessLog("box");                        // ✅ 성공 로그 추가
-            } else {
-                flashBlink("#ff2222", "#fff", "오류");
-                sendErrorLog("box");
-            }
-            setTimeout(() => {
-                isBoxProductOK = false;
-                boxProductInput.value = "";
-                boxBarcodeInput.value = "";
-                boxProductInput.focus();
-            }, 3000);
+// 포장 점검 - 박스 바코드 엔터
+boxBarcodeInput.onkeydown = function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        const scanVal = boxBarcodeInput.value.trim();
+
+        // 박스 바코드 OR 제품 바코드 둘 다 OK!
+        if (isBoxProductOK && (scanVal === boxBarcode || scanVal === productBarcode)) {
+            flashBlink("#38c172", "#fff", "정상");
+            document.getElementById('soundNext').play();  // ✅ NEXT.MP3 재생
+            sendSuccessLog("box");                        // ✅ 성공 로그 추가
+        } else {
+            flashBlink("#ff2222", "#fff", "오류");
+            sendErrorLog("box");
         }
-    };
+        setTimeout(() => {
+            isBoxProductOK = false;
+            boxProductInput.value = "";
+            boxBarcodeInput.value = "";
+            boxProductInput.focus();
+        }, 3000);
+    }
+};
 
     // flash/사운드 및 리셋
     function flashBlink(bg, color, text) {
