@@ -216,21 +216,27 @@
         <a href="javascript:history.back();" class="back-btn">← 이전</a>
         <a href="{% url 'admin_panel' %}" class="back-btn">← 관리자 메뉴로</a>
         <div class="shipping-title">출하 점검 진행</div>
-        <table class="info-table">
-            <tr><th>제품명</th><td>{{ session.product.name }}</td></tr>
-            <tr><th>박스 바코드</th><td id="boxBarcodeVal">{{ session.product.box_barcode }}</td></tr>
-            <tr><th>파레트 기준 박스 수량</th><td>{{ session.product.pallet_box_quantity }}</td></tr>
-        </table>
-        <form id="barcodeScanForm" autocomplete="off">
-            <label for="scanned_code" class="barcode-label">박스 바코드 스캔</label>
-            <div class="barcode-input-row">
-                <input type="text" id="scanned_code" class="barcode-input" autofocus onblur="this.focus();">
-                <button type="submit" class="barcode-btn">확인</button>
-            </div>
-        </form>
-        <div class="count-box">
-            파레트 수량: <span id="palletCount">{{ session.pallet_count }}</span>     /     총 박스 수량: <span id="boxCount">{{ session.box_count }}</span>
-        </div>
+<table class="info-table">
+    <tr><th>제품명</th><td>{{ session.product.name }}</td></tr>
+    <tr><th>제품 바코드</th><td id="productBarcodeVal">{{ session.product.product_barcode }}</td></tr>
+    <tr><th>박스 바코드</th><td id="boxBarcodeVal">{{ session.product.box_barcode }}</td></tr>
+    <tr><th>파레트 기준 박스 수량</th><td>{{ session.product.pallet_box_quantity }}</td></tr>
+</table>
+<form id="barcodeScanForm" autocomplete="off">
+    <label for="product_code" class="barcode-label">제품 바코드 스캔</label>
+    <div class="barcode-input-row">
+        <input type="text" id="product_code" class="barcode-input" autocomplete="off">
+    </div>
+    <label for="box_code" class="barcode-label">박스 바코드 스캔</label>
+    <div class="barcode-input-row">
+        <input type="text" id="box_code" class="barcode-input" autocomplete="off">
+    </div>
+    <button type="submit" class="barcode-btn">확인</button>
+</form>
+<div class="count-box">
+    파레트 수량: <span id="palletCount">{{ session.pallet_count }}</span>
+    / 총 박스 수량: <span id="boxCount">{{ session.box_count }}</span>
+</div>
         <div id="feedbackArea"></div>
         <form id="shippingSaveForm">
             {% csrf_token %}
@@ -246,99 +252,131 @@
     <audio id="soundError" src="/static/sounds/ng.mp3" preload="auto"></audio>
 
 <script>
-    const input = document.getElementById('scanned_code');
+    // DOM 캐싱
+    const productInput = document.getElementById('product_code');   // 제품 바코드 input
+    const boxInput = document.getElementById('box_code');           // 박스 바코드 input
     const boxCountEl = document.getElementById('boxCount');
     const palletCountEl = document.getElementById('palletCount');
+    const productBarcode = document.getElementById('productBarcodeVal').innerText.trim();
     const boxBarcode = document.getElementById('boxBarcodeVal').innerText.trim();
     const feedbackArea = document.getElementById('feedbackArea');
     const soundSuccess = document.getElementById('soundSuccess');
     const soundError = document.getElementById('soundError');
+    const palletBoxQuantity = parseInt("{{ session.product.pallet_box_quantity }}");
 
     let boxCount = parseInt(boxCountEl.innerText);
     let palletCount = parseInt(palletCountEl.innerText);
-    const palletBoxQuantity = parseInt("{{ session.product.pallet_box_quantity }}");
 
-    document.getElementById('barcodeScanForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const value = input.value.trim();
-    if (!value) return;
+    // On page load, focus on product barcode input
+    window.onload = function() {
+        productInput.focus();
+    };
 
-    if (value === boxBarcode) {
-        palletCount += 1;
-        palletCountEl.innerText = palletCount;
-        boxCount = palletCount * palletBoxQuantity;
-        boxCountEl.innerText = boxCount;
+    // 제품 바코드 스캔 → 맞으면 박스 바코드로 포커스 이동, 아니면 오류
+    productInput.addEventListener('keydown', function(e){
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if(productInput.value.trim() === productBarcode){
+                boxInput.focus();
+            } else {
+                showFeedback('제품 바코드 오류', "#ff4d4f", "#fff");
+                soundError.currentTime = 0;
+                soundError.play();
+                productInput.value = '';
+                productInput.focus();
+            }
+        }
+    });
 
-        showFeedback("정상", "#38c172", "#fff");
-        soundSuccess.currentTime = 0;
-        soundSuccess.play().catch(e => console.warn("Success Sound Blocked", e));
-    } else {
-        showFeedback("오류", "#ff4d4f", "#fff");
-        soundError.currentTime = 0;
-        soundError.play().catch(e => console.warn("Error Sound Blocked", e));
-    }
+    // 박스 바코드 스캔 → 둘 다 일치 시 카운트, 아니면 오류
+    boxInput.addEventListener('keydown', function(e){
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if(
+                productInput.value.trim() === productBarcode &&
+                boxInput.value.trim() === boxBarcode
+            ){
+                // 카운트 증가
+                boxCount += 1;
+                boxCountEl.innerText = boxCount;
+                if(boxCount % palletBoxQuantity === 0){
+                    palletCount += 1;
+                    palletCountEl.innerText = palletCount;
+                }
+                showFeedback('정상', "#38c172", "#fff");
+                soundSuccess.currentTime = 0;
+                soundSuccess.play();
+            } else {
+                showFeedback('박스 바코드 오류', "#ff4d4f", "#fff");
+                soundError.currentTime = 0;
+                soundError.play();
+            }
+            // 모두 초기화 후 다시 제품 바코드로 포커스
+            productInput.value = '';
+            boxInput.value = '';
+            productInput.focus();
+        }
+    });
 
-    input.value = '';
-    input.focus();
-});
-
-
+    // 피드백 출력
     function showFeedback(text, bgColor, color) {
         feedbackArea.innerText = text;
         feedbackArea.style.backgroundColor = bgColor;
         feedbackArea.style.color = color;
-
         setTimeout(() => {
             feedbackArea.innerText = '';
             feedbackArea.style.backgroundColor = '';
         }, 1500);
     }
 
-document.getElementById("shippingSaveForm").addEventListener("submit", function (e) {
-    e.preventDefault();
+    // 저장버튼 검증 및 제출
+    document.getElementById("shippingSaveForm").addEventListener("submit", function (e) {
+        e.preventDefault();
 
-    document.getElementById("hiddenBoxCount").value = boxCount;
-    document.getElementById("hiddenPalletCount").value = palletCount;
+        document.getElementById("hiddenBoxCount").value = boxCount;
+        document.getElementById("hiddenPalletCount").value = palletCount;
 
-    // 1. 박스 수량이 0이면 저장 불가
-    if (boxCount === 0) {
-        alert("현재 박스 수량이 0입니다. 출하 점검을 저장할 수 없습니다.");
-        return;
-    }
-    // 2. 파레트 수량이 0이면 저장 불가
-    if (palletCount === 0) {
-        alert("파레트 수량이 0입니다. 출하 점검을 저장할 수 없습니다.");
-        return;
-    }
-    // 3. 박스 수량이 파레트 기준 박스 수량의 배수인지 검사
-    if (boxCount % palletBoxQuantity !== 0) {
-        alert("박스 수량이 파레트 기준 박스 수량의 배수가 아닙니다.\n정확한 수량인지 확인해주세요.");
-        return;
-    }
-
-    fetch("{% url 'shipping:save_shipping_log' session.id %}", {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: new URLSearchParams(new FormData(this))
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === "ok") {
-            alert(data.message);
-            history.back();
-        } else {
-            alert("저장 실패: " + data.message);
+        // 1. 박스 수량이 0이면 저장 불가
+        if (boxCount === 0) {
+            alert("현재 박스 수량이 0입니다. 출하 점검을 저장할 수 없습니다.");
+            return;
         }
-    })
-    .catch(err => {
-        alert("서버 오류 발생");
-        console.error(err);
+        // 2. 파레트 수량이 0이면 저장 불가
+        if (palletCount === 0) {
+            alert("파레트 수량이 0입니다. 출하 점검을 저장할 수 없습니다.");
+            return;
+        }
+        // 3. 박스 수량이 파레트 기준 박스 수량의 배수인지 검사
+        if (boxCount % palletBoxQuantity !== 0) {
+            alert("박스 수량이 파레트 기준 박스 수량의 배수가 아닙니다.\n정확한 수량인지 확인해주세요.");
+            return;
+        }
+
+        fetch("{% url 'shipping:save_shipping_log' session.id %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams(new FormData(this))
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "ok") {
+                alert(data.message);
+                history.back();
+            } else {
+                alert("저장 실패: " + data.message);
+            }
+        })
+        .catch(err => {
+            alert("서버 오류 발생");
+            console.error(err);
+        });
     });
-});
 
 </script>
+
+
 </body>
 </html>

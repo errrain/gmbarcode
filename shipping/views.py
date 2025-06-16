@@ -17,17 +17,21 @@ from django.utils.dateparse import parse_date
 
 # ✅ 출하 홈
 def shipping_home(request):
-    box_barcode = request.GET.get("box_barcode")
     product = None
-    if box_barcode:
+    barcode = request.GET.get('barcode', '').strip()
+    if barcode:
+        # 박스 바코드 또는 제품 바코드 둘 다 비교!
         try:
-            product = Product.objects.get(box_barcode=box_barcode, is_deleted=False)
+            product = Product.objects.get(box_barcode=barcode)
         except Product.DoesNotExist:
-            product = None
+            try:
+                product = Product.objects.get(product_barcode=barcode)
+            except Product.DoesNotExist:
+                product = None
 
     return render(request, 'shipping/shipping_home.html', {
-        'box_barcode': box_barcode,
-        'product': product
+        'product': product,
+        'box_barcode': barcode,  # 입력값 유지용
     })
 
 

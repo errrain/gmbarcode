@@ -182,13 +182,13 @@
     <div class="shipping-card">
         <div class="shipping-title">출하 점검</div>
         <a href="{% url 'admin_panel' %}" class="back-btn">← 관리자 메뉴로</a>
-        <form method="get">
-            <label class="barcode-label" for="box_barcode">박스 바코드 스캔 또는 입력</label>
-            <div class="barcode-input-row">
-                <input type="text" name="box_barcode" value="{{ box_barcode|default:'' }}" id="box_barcode" class="barcode-input" autofocus required>
-                <button type="submit" class="barcode-btn">검색</button>
-            </div>
-        </form>
+<form method="get">
+    <label class="barcode-label" for="barcode">박스/제품 바코드 스캔 또는 입력</label>
+    <div class="barcode-input-row">
+        <input type="text" name="barcode" value="{{ request.GET.barcode|default:'' }}" id="barcode" class="barcode-input" autofocus required>
+        <button type="submit" class="barcode-btn">검색</button>
+    </div>
+</form>
 
         {% if product %}
         <div class="product-info-block">
