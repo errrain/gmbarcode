@@ -1,3 +1,5 @@
+<!-- barcode_check.html -->
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -6,292 +8,419 @@
     {% load static %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            font-family: '맑은 고딕', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-        }
-        .top-bar {
-            background-color: #0066cc;
-            color: white;
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .top-bar .ci {
-            font-size: 18px;
-
-
-
-
-
-
-            font-weight: bold;
-        }
-        .logout-btn {
-            background-color: #f44336;
-            border: none;
-            color: white;
-            padding: 6px 12px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .main-card {
-            max-width: 560px;
-            margin: 40px auto 0 auto;
-            background-color: #fff;
-            padding: 36px 36px 28px 36px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.10);
-        }
-        .main-title {
-            text-align: center;
-            color: #0056b3;
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 28px;
-            letter-spacing: 0.03em;
-        }
-        .btn-back {
-            display: inline-block;
-            margin-bottom: 22px;
-            background: #6c757d;
-            color: #fff;
-            border: none;
-            border-radius: 7px;
-            padding: 12px 24px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
-            transition: background 0.2s, transform 0.1s;
-        }
-        .btn-back:hover {
-            background: #495057;
-        }
-        .product-card {
-            background: #f9fbfe;
-            border-radius: 12px;
-            box-shadow: 0 0 7px rgba(0,0,0,0.07);
-            text-align: center;
-            text-decoration: none;
-            color: inherit;
-            display: flex;
+    body {
+        font-family: '맑은 고딕', sans-serif;
+        background: #f5f5f5;
+        margin: 0;
+        padding: 0;
+    }
+    .top-bar {
+        background: #1668c2;
+        color: #fff;
+        padding: 14px 0 11px 28px;
+        font-size: 22px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-width: 0;
+    }
+    .top-bar .user-area {
+        font-size: 16px;
+        font-weight: normal;
+        margin-right: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .logout-btn {
+        color: #fff;
+        background: #e94b36;
+        border-radius: 6px;
+        padding: 7px 16px;
+        margin-left: 7px;
+        font-weight: bold;
+        text-decoration: none;
+        border: none;
+        font-size: 15px;
+        cursor: pointer;
+    }
+    /* === 2단 메인 레이아웃 === */
+    .main-wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 36px;
+        padding: 42px 0 0 0;
+        min-height: 100vh;
+        box-sizing: border-box;
+    }
+    .info-section, .check-section {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+        padding: 32px 40px;
+        min-width: 340px;
+        max-width: 540px;
+        flex: 1 1 0;
+        margin-bottom: 0;
+        box-sizing: border-box;
+    }
+    .info-title {
+        font-size: 25px;
+        font-weight: bold;
+        text-align: center;
+        color: #1668c2;
+        margin-bottom: 18px;
+        letter-spacing: 0.02em;
+    }
+    .product-name {
+        background: #f8fbff;
+        border: 2px solid #d5e6f5;
+        border-radius: 9px;
+        font-size: 21px;
+        font-weight: 700;
+        color: #194b86;
+        margin-bottom: 16px;
+        padding: 12px 8px;
+        text-align: center;
+    }
+    .info-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 17px;
+        margin-bottom: 28px;
+    }
+    .info-table th, .info-table td {
+        border: 1.4px solid #c1d5ee;
+        padding: 10px 7px;
+        text-align: center;
+    }
+    .info-table th {
+        background: #3f8edc;
+        color: #fff;
+        font-weight: bold;
+    }
+    .info-table td {
+        background: #f7fafc;
+        color: #193366;
+        font-weight: 500;
+    }
+    .back-btn {
+        margin-bottom: 20px;
+        background: #656d74;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 13px 30px;
+        font-size: 19px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .tab-btns {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 18px;
+        justify-content: center;
+    }
+    .tab-btn {
+        flex: 1;
+        padding: 15px 0;
+        font-size: 18px;
+        border: none;
+        border-radius: 9px;
+        font-weight: bold;
+        background: #e9ecef;
+        color: #246ec6;
+        box-shadow: 0 1px 4px rgba(34,120,200,0.06);
+        transition: background 0.18s, color 0.18s;
+        cursor: pointer;
+    }
+    .tab-btn.active {
+        background: #8ad76c;
+        color: #123a15;
+    }
+    .check-panel {
+        background: #eaf3fa;
+        border-radius: 12px;
+        padding: 24px 18px;
+        box-shadow: 0 0 8px rgba(31,75,131,0.09);
+    }
+    .check-btns {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 14px;
+        justify-content: center;
+    }
+    .btn-start {
+        background: #e94b36;
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        padding: 10px 26px;
+        font-size: 17px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .btn-reset {
+        background: #1ca2cc;
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        padding: 10px 26px;
+        font-size: 17px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .scan-label {
+        font-size: 19px;
+        font-weight: 600;
+        color: #193366;
+        margin-bottom: 9px;
+        text-align: center;
+    }
+    .scan-input-row {
+        display: flex;
+        gap: 9px;
+        margin-bottom: 11px;
+        justify-content: center;
+        align-items: center;
+    }
+    .scan-input {
+        font-size: 19px;
+        padding: 8px 7px;
+        border-radius: 7px;
+        border: 1.2px solid #6bb2e6;
+        width: 190px;
+    }
+    .input-reset {
+        padding: 4px 17px;
+        border-radius: 6px;
+        border: 1.1px solid #bababa;
+        background: #f6f8fa;
+        font-size: 15px;
+        cursor: pointer;
+        color: #1d222a;
+    }
+    .scan-info {
+        font-size: 18px;
+        font-weight: bold;
+        color: #00244c;
+        margin-bottom: 7px;
+        text-align: center;
+    }
+    #flashArea {
+        background:#eee;
+        border-radius:7px;
+        height:40px;
+        margin-top:15px;
+        font-size:16px;
+        font-weight:600;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+    /* === 모바일 반응형 === */
+    @media (max-width: 900px) {
+        .main-wrapper {
             flex-direction: column;
             align-items: center;
-            transition: 0.16s;
-            border: 1.3px solid #e3eaf2;
-            padding: 18px 12px 15px 12px;
-            margin: 0 auto 24px auto;
-            max-width: 100%;
-            width: 100%;
+            gap: 18px;
+            padding: 10px 0;
         }
-        .product-card img {
+        .info-section, .check-section {
+            min-width: 0;
+            width: 98vw;
+            max-width: 99vw;
+            margin-bottom: 0;
+            padding: 7vw 4vw 6vw 4vw;
+            border-radius: 0;
+            box-sizing: border-box;
+        }
+        .info-title { font-size: 18px; margin-bottom: 8px; }
+        .product-name { font-size: 13px; padding: 6px 2px; }
+        .info-table { font-size: 13px; }
+        .info-table th, .info-table td { padding: 4px 2px; }
+        .tab-btns { gap: 2vw; margin-bottom: 7px; }
+        .tab-btn { font-size: 14px; padding: 7px 0; }
+        .check-panel { padding: 5vw 2vw; }
+        .check-btns { gap: 2vw; margin-bottom: 7px; }
+        .btn-start, .btn-reset { font-size: 13px; padding: 7px 12px; }
+        .scan-label { font-size: 13px; margin-bottom: 5px; }
+        .scan-input-row { gap: 1vw; margin-bottom: 5px; }
+        .scan-input { font-size: 13px; padding: 7px 3px; width: 85vw; max-width: 95vw; }
+        .input-reset { padding: 3px 7px; font-size: 11px; }
+        .scan-info { font-size: 13px; margin-bottom: 3px; }
+        #flashArea { height: 27px; font-size: 13px; margin-top: 8px; }
+    .top-bar {
+        font-size: 14px;
+        padding: 8px 2vw 8px 2vw;
+        flex-direction: row !important;  /* 항상 row로 */
+        align-items: center !important;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        gap: 0;
+    }
+    .top-bar .user-area {
+        font-size: 13px;
+        margin-right: 0;
+        gap: 5px;
+        flex-direction: row !important;
+        align-items: center;
+    }
+    .logout-btn {
+        font-size: 12px;
+        padding: 5px 10px;
+        margin-left: 6px;
+        white-space: nowrap;
+    }
+    .top-bar > div {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+        .product-img-placeholder,
+        .product-img {
             width: 100%;
-            max-width: 99%;
-            height: 99%;
-            object-fit: cover;
+            height: 64px;              /* 세로 제한 (원하는 값으로 조정) */
+            max-height: 64px;
             border-radius: 8px;
-            background-color: #e9ecef;
-            margin: 0 auto 10px auto;
-            border: 1px solid #dbe6f2;
+            border: 1.1px solid #e0e0e0;
+            margin-bottom: 9px;
+            display: block;
+            object-fit: contain;
+            background: #ededed;
         }
-        .product-card-name {
-            font-size: 16px;
-            font-weight: bold;
-            color: #003366;
-            word-break: break-word;
-            margin-top: 8px;
-            margin-bottom: 2px;
-            letter-spacing: 0.01em;
-        }
-        .info-table {
-            width: 100%;
-            max-width: 340px;
-            margin: 0 auto 20px auto;
-            border-collapse: collapse;
-            background: #eaf3fa;
-            border-radius: 7px;
-            overflow: hidden;
-            font-size: 1em;
-        }
-        .info-table th, .info-table td {
-            border: 1px solid #b7d2ec;
-            padding: 8px 4px;
-            text-align: center;
-        }
-        .info-table th {
-            background: #3791d6;
-            color: #fff;
-            font-size: 0.98em;
-            font-weight: bold;
-        }
-        .info-table td {
-            background: #f8fbfd;
-            color: #003366;
-            font-weight: 500;
-        }
-        .btn-area {
-            width: 100%;
-            max-width: 340px;
-            margin: 0 auto 12px auto;
-            display: flex;
-            gap: 8px;
-        }
-        .main-btn {
-            flex: 1;
-            padding: 12px 0;
-            font-size: 16px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            box-shadow: 1px 2px 4px rgba(0,0,0,0.07);
-            cursor: pointer;
-            transition: background 0.18s;
-        }
-        .main-btn#btnMixCheck {
-            background: #8ad76c;
-            color: #222;
-        }
-        .main-btn#btnBoxCheck {
+        .product-img {
             background: #fff;
-            color: #0066cc;
-            border: 1px solid #d6d6d6;
         }
-        .main-btn.active, .main-btn:active {
-            background: #8ad76c;
-            color: #222;
         }
-        .section-area {
-            width: 100%;
-            max-width: 340px;
-            background: #f4f9fe;
-            border-radius: 7px;
-            min-height: 32px;
-            margin: 10px auto 12px auto;
-            padding: 12px 10px 10px 10px;
-            text-align: center;
-            font-size: 1em;
-            color: #004a8e;
-            border: 1px solid #d3e3f4;
-        }
-        #flashArea {
-            width: 100%;
-            max-width: 340px;
-            height: 38px;
-            background: #eee;
-            color: #555;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 12px auto 0 auto;
-            border-radius: 7px;
-            transition: background 0.2s;
-            font-size: 1.13em;
-            font-weight: bold;
-        }
-        input[type="text"] {
-            width: 92%;
-            max-width: 220px;
-            font-size: 1.08em;
-            padding: 7px;
-            border-radius: 6px;
-            border: 1.2px solid #b7d2ec;
-            margin-bottom: 8px;
-        }
-        button {
-            cursor: pointer;
-        }
-        @media (max-width: 600px) {
-            .main-card {
-                max-width: 100vw;
-                padding: 6vw 3vw 5vw 3vw;
-                border-radius: 0;
-            }
-            .main-title {
-                font-size: 17px;
-                margin-bottom: 12px;
-            }
-            .product-card {
-                padding: 10px 5vw 14px 5vw;
-            }
-            .product-card img {
-                max-width: 100vw;
-                height: 78px;
-            }
-            .info-table, .btn-area, .section-area, #flashArea {
-                max-width: 98vw;
-            }
-        }
+
+@media (min-width: 1100px) {
+    .scan-info {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+    .scan-info .label {
+        font-size: 22px;
+        font-weight: 700;
+        color: #193366;
+        letter-spacing: 0.01em;
+    }
+    .scan-info .value {
+        font-size: 30px;
+        font-weight: 900;
+        color: #00244c;
+        letter-spacing: 1px;
+        line-height: 1.0;
+        margin-left: 8px;
+    }
+        .product-img-placeholder {
+        width: 100%;
+        height: 120px;         /* 원하는 높이로 조정 */
+        background: #ededed;
+        border-radius: 10px;
+        border: 1.5px solid #e0e0e0;
+        margin-bottom: 16px;
+    }
+    .product-img-placeholder,
+    .product-img {
+        width: 100%;
+        height: 120px;          /* 높이 고정 */
+        max-height: 120px;
+        border-radius: 10px;
+        border: 1.5px solid #e0e0e0;
+        margin-bottom: 16px;
+        display: block;
+        object-fit: contain;    /* 이미지 왜곡 방지 */
+        background: #ededed;
+    }
+    .product-img {
+        background: #fff;       /* 실제 이미지에는 흰배경 */
+    }
+}
+
     </style>
 </head>
 <body>
     <div class="top-bar">
-        <div class="ci">서경화학 - 바코드 점검</div>
-        <div>
+        <div>서경화학 - 바코드 점검</div>
+        <div class="user-area">
             작업자: {{ request.user.full_name }}
             <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
         </div>
     </div>
-    <div class="main-card">
-        <a href="javascript:history.back();" class="btn-back" style="width: 140px;">← 이전</a>
-        <div class="main-title">바코드 점검</div>
-        <div class="product-card">
+    <div class="main-wrapper">
+        <!-- 왼쪽: 정보 -->
+        <div class="info-section">
+            <button class="back-btn" onclick="history.back();">← 이전</button>
+            <div class="info-title">바코드 점검</div>
             {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
+            {% else %}
+                <div class="product-img-placeholder"></div>
             {% endif %}
-            <div class="product-card-name">{{ product.name }}</div>
+            <div class="product-name">{{ product.name }}</div>
+            <table class="info-table">
+                <tr>
+                    <th>박스 포장 수량</th><td>{{ product.box_quantity }}</td>
+                </tr>
+                <tr>
+                    <th>제품 바코드</th><td>{{ product.product_barcode }}</td>
+                </tr>
+                <tr>
+                    <th>박스 바코드</th><td>{{ product.box_barcode }}</td>
+                </tr>
+            </table>
         </div>
-        <table class="info-table">
-            <tr>
-                <td>박스 포장 수량</td><td>{{ product.box_quantity }}</td>
-            </tr>
-            <tr>
-                <td>제품 바코드</td><td>{{ product.product_barcode }}</td>
-            </tr>
-            <tr>
-                <td>박스 바코드</td><td>{{ product.box_barcode }}</td>
-            </tr>
-        </table>
-        <div class="btn-area">
-            <button id="btnMixCheck" class="main-btn" style="background:#8ad76c;">혼입 점검</button>
-            <button id="btnBoxCheck" class="main-btn">포장 점검</button>
+        <!-- 오른쪽: 검사 -->
+        <div class="check-section">
+            <div class="tab-btns">
+                <button id="btnMixCheck" class="tab-btn active">혼입 점검</button>
+                <button id="btnBoxCheck" class="tab-btn">포장 점검</button>
+            </div>
+            <div id="area1" class="check-panel">
+                <div class="check-btns">
+                    <button id="btnStart" class="btn-start">검사시작</button>
+                    <button id="btnReset" class="btn-reset">초기화</button>
+                </div>
+                <div class="scan-label">제품 바코드 스캔</div>
+                <div class="scan-input-row">
+                    <input id="barcodeInput" type="text" class="scan-input" autocomplete="off">
+                    <button onclick="resetInput()" class="input-reset">reset</button>
+                </div>
+                    <div class="scan-info">
+                        <span class="label">스캔수량 :</span>
+                        <span id="scanCount" class="value">0 EA</span>
+                    </div>
+                    <div class="scan-info">
+                        <span class="label">박스포장수량 :</span>
+                        <span id="boxCount" class="value">{{ product.box_quantity }} EA</span>
+                    </div>
+            </div>
+            <div id="area2" class="check-panel" style="display:none;">
+                <div class="check-btns">
+                    <button id="btnBoxStart" class="btn-start">검사시작</button>
+                    <button id="btnBoxReset" class="btn-reset">초기화</button>
+                </div>
+                <div class="scan-label">제품 바코드 스캔</div>
+                <div class="scan-input-row">
+                    <input id="boxProductInput" type="text" class="scan-input" autocomplete="off">
+                    <button onclick="resetBoxProductInput()" class="input-reset">reset</button>
+                </div>
+                <div class="scan-label">포장 박스 제품 바코드 스캔</div>
+                <div class="scan-input-row">
+                    <input id="boxBarcodeInput" type="text" class="scan-input" autocomplete="off">
+                    <button onclick="resetBoxBarcodeInput()" class="input-reset">reset</button>
+                </div>
+            </div>
+            <div id="flashArea" class="scan-info" style="background:#eee;border-radius:7px;height:130px;margin-top:10px;"></div>
         </div>
-        <div id="area1" class="section-area">
-            <div style="margin:8px 0;">
-                <button id="btnStart" style="background:#e94b36;color:#fff;padding:8px 24px;border-radius:6px;border:none;margin-right:8px;">검사시작</button>
-                <button id="btnReset" style="background:#1ca2cc;color:#fff;padding:8px 24px;border-radius:6px;border:none;">초기화</button>
-            </div>
-            <div style="margin-bottom:7px;">제품 바코드 스캔</div>
-            <input id="barcodeInput" type="text" autocomplete="off">
-            <button onclick="resetInput()" style="margin:4px 0 10px 3px;padding:2px 14px;">reset</button>
-            <div style="margin-bottom:4px;">
-                <span style="font-weight:bold;color:#003366;font-size:1.05em;">스캔수량 : </span>
-                <span id="scanCount" style="font-weight:bold;color:#222;">0 EA</span>
-            </div>
-            <div style="margin-bottom:6px;">
-                <span style="font-weight:bold;color:#003366;font-size:1.05em;">박스포장수량 : </span>
-                <span id="boxCount" style="font-weight:bold;color:#222;">{{ product.box_quantity }} EA</span>
-            </div>
-        </div>
-        <div id="area2" class="section-area" style="display:none;">
-            <div style="margin:8px 0;">
-                <button id="btnBoxStart" style="background:#e94b36;color:#fff;padding:8px 24px;border-radius:6px;border:none;margin-right:8px;">검사시작</button>
-                <button id="btnBoxReset" style="background:#1ca2cc;color:#fff;padding:8px 24px;border-radius:6px;border:none;">초기화</button>
-            </div>
-            <div style="margin-bottom:4px;">제품 바코드 스캔</div>
-            <input id="boxProductInput" type="text" autocomplete="off">
-            <button onclick="resetBoxProductInput()" style="margin:4px 0 10px 3px;padding:2px 14px;">reset</button>
-            <div style="margin-bottom:7px;">포장 박스 제품 바코드 스캔</div>
-            <input id="boxBarcodeInput" type="text" autocomplete="off">
-            <button onclick="resetBoxBarcodeInput()" style="margin:4px 0 10px 3px;padding:2px 14px;">reset</button>
-        </div>
-        <div id="flashArea"></div>
     </div>
     <!-- 사운드 리소스 -->
     <audio id="soundSuccess" src="{% static 'sounds/ok.mp3' %}"></audio>
@@ -299,204 +428,233 @@
     <audio id="soundNext" src="{% static 'sounds/next.mp3' %}"></audio>
 
     <!-- 스크립트 -->
-    <script>
-    // === 템플릿에서 product.id를 JS 변수로 전달 ===
-    const productId = "{{ product.id }}";
-    const productBarcode = "{{ product.product_barcode }}";
-    const boxBarcode = "{{ product.box_barcode }}";
-    const boxQuantity = parseInt("{{ product.box_quantity|default:0 }}");
+<script>
+// === 템플릿에서 product.id와 바코드 정보 JS 변수로 전달 ===
+const productId = "{{ product.id }}";
+const productBarcode = "{{ product.product_barcode }}";
+const boxBarcode = "{{ product.box_barcode }}";
+const boxQuantity = parseInt("{{ product.box_quantity|default:0 }}");
+const productBarcodeLen = productBarcode.length;
+const boxBarcodeLen = boxBarcode.length;
 
-    // 혼입 점검 관련
-    let scanValue = 0;
-    let isBoxProductOK = false;
+// 혼입 점검 관련 변수
+let scanValue = 0;
+let isBoxProductOK = false;
 
-    // DOM 캐싱
-    const btnMix = document.getElementById('btnMixCheck');
-    const btnBox = document.getElementById('btnBoxCheck');
-    const area1 = document.getElementById('area1');
-    const area2 = document.getElementById('area2');
-    const flashArea = document.getElementById('flashArea');
-    const barcodeInput = document.getElementById('barcodeInput');
-    const btnStart = document.getElementById('btnStart');
-    const btnReset = document.getElementById('btnReset');
-    const scanCount = document.getElementById('scanCount');
-    const boxCount = document.getElementById('boxCount');
-    const btnBoxStart = document.getElementById('btnBoxStart');
-    const btnBoxReset = document.getElementById('btnBoxReset');
-    const boxProductInput = document.getElementById('boxProductInput');
-    const boxBarcodeInput = document.getElementById('boxBarcodeInput');
+// DOM 캐싱
+const btnMix = document.getElementById('btnMixCheck');
+const btnBox = document.getElementById('btnBoxCheck');
+const area1 = document.getElementById('area1');
+const area2 = document.getElementById('area2');
+const flashArea = document.getElementById('flashArea');
+const barcodeInput = document.getElementById('barcodeInput');
+const btnStart = document.getElementById('btnStart');
+const btnReset = document.getElementById('btnReset');
+const scanCount = document.getElementById('scanCount');
+const boxCount = document.getElementById('boxCount');
+const btnBoxStart = document.getElementById('btnBoxStart');
+const btnBoxReset = document.getElementById('btnBoxReset');
+const boxProductInput = document.getElementById('boxProductInput');
+const boxBarcodeInput = document.getElementById('boxBarcodeInput');
 
-    // 구역 전환(혼입/포장)
-    btnMix.onclick = function() {
-        btnMix.style.background = "#8ad76c";
-        btnBox.style.background = "#fff";
-        area1.style.display = "";
-        area2.style.display = "none";
-        resetFlash();
-    };
-    btnBox.onclick = function() {
-        btnMix.style.background = "#fff";
-        btnBox.style.background = "#8ad76c";
-        area1.style.display = "none";
-        area2.style.display = "";
-        resetFlash();
-    };
+// 오디오 객체 참조
+const soundSuccess = document.getElementById('soundSuccess');
+const soundError = document.getElementById('soundError');
+const soundNext = document.getElementById('soundNext');
 
-    // 혼입 점검 - 검사시작
-    btnStart.onclick = function() { barcodeInput.focus(); };
+// 구역 전환(혼입/포장)
+btnMix.onclick = function() {
+    btnMix.style.background = "#8ad76c";
+    btnBox.style.background = "#fff";
+    area1.style.display = "";
+    area2.style.display = "none";
+    resetFlash();
+};
+btnBox.onclick = function() {
+    btnMix.style.background = "#fff";
+    btnBox.style.background = "#8ad76c";
+    area1.style.display = "none";
+    area2.style.display = "";
+    resetFlash();
+};
 
-    // 혼입 점검 - reset
-    btnReset.onclick = resetAll;
-    function resetInput() { barcodeInput.value = ""; barcodeInput.focus(); }
-    function resetAll() {
-        scanValue = 0;
-        scanCount.innerText = "0 EA";
+// 혼입 점검 - 검사시작
+btnStart.onclick = function() { barcodeInput.focus(); };
+
+// 혼입 점검 - reset
+btnReset.onclick = resetAll;
+function resetInput() { barcodeInput.value = ""; barcodeInput.focus(); }
+function resetAll() {
+    scanValue = 0;
+    scanCount.innerText = "0 EA";
+    barcodeInput.value = "";
+    barcodeInput.focus();
+    resetFlash();
+}
+
+// 혼입 점검 - 바코드 엔터 입력 (기준 길이만큼 슬라이스)
+barcodeInput.onkeydown = function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        let val = barcodeInput.value.trim();
+        val = val.slice(0, productBarcodeLen);
+
+        if (val === productBarcode) {
+            scanValue++;
+            scanCount.innerText = scanValue + " EA";
+            flashBlink("#38c172", "#fff", "정상");
+            if (scanValue === boxQuantity) {
+                playSound(soundNext);
+                sendSuccessLog("mix");
+                setTimeout(resetAll, 3000);
+            }
+        } else {
+            flashBlink("#ff2222", "#fff", "오류");
+            sendErrorLog("mix");
+        }
         barcodeInput.value = "";
         barcodeInput.focus();
-        resetFlash();
     }
+};
 
-    // 혼입 점검 - 바코드 엔터 입력
-    barcodeInput.onkeydown = function(e) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            const val = barcodeInput.value.trim();
-            if (!val) return;
-            if (val === productBarcode) {
-                scanValue++;
-                scanCount.innerText = scanValue + " EA";
-                flashBlink("#38c172", "#fff", "정상");
-                if (scanValue === boxQuantity) {
-                    document.getElementById('soundNext').play();  // ✅ NEXT.MP3 재생
-                    sendSuccessLog("mix");                       // ✅ 성공 로그 추가
-                    setTimeout(resetAll, 3000);
-                }
-            } else {
-                flashBlink("#ff2222", "#fff", "오류");
-                sendErrorLog("mix");
-            }
-            barcodeInput.value = "";
-            barcodeInput.focus();
+// 포장 점검 - 검사시작/초기화
+btnBoxStart.onclick = function() {
+    isBoxProductOK = false;
+    boxProductInput.value = "";
+    boxBarcodeInput.value = "";
+    boxProductInput.focus();
+};
+btnBoxReset.onclick = resetBoxAll;
+function resetBoxProductInput() { boxProductInput.value = ""; boxProductInput.focus(); }
+function resetBoxBarcodeInput() { boxBarcodeInput.value = ""; boxBarcodeInput.focus(); }
+function resetBoxAll() {
+    isBoxProductOK = false;
+    boxProductInput.value = "";
+    boxBarcodeInput.value = "";
+    boxProductInput.focus();
+    resetFlash();
+}
+
+// 포장 점검 - 제품 바코드 엔터 (기준 길이만큼 슬라이스)
+boxProductInput.onkeydown = function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        let val = boxProductInput.value.trim();
+        val = val.slice(0, productBarcodeLen);
+
+        if (val === productBarcode) {
+            isBoxProductOK = true;
+            boxBarcodeInput.value = "";
+            boxBarcodeInput.focus();
+        } else {
+            isBoxProductOK = false;
+            flashBlink("#ff2222", "#fff", "오류");
+            sendErrorLog("box");
+            setTimeout(() => {
+                boxProductInput.value = "";
+                boxProductInput.focus();
+            }, 3000);
         }
-    };
-
-    // 포장 점검 - 검사시작/초기화
-    btnBoxStart.onclick = function() {
-        isBoxProductOK = false;
-        boxProductInput.value = "";
-        boxBarcodeInput.value = "";
-        boxProductInput.focus();
-    };
-    btnBoxReset.onclick = resetBoxAll;
-    function resetBoxProductInput() { boxProductInput.value = ""; boxProductInput.focus(); }
-    function resetBoxBarcodeInput() { boxBarcodeInput.value = ""; boxBarcodeInput.focus(); }
-    function resetBoxAll() {
-        isBoxProductOK = false;
-        boxProductInput.value = "";
-        boxBarcodeInput.value = "";
-        boxProductInput.focus();
-        resetFlash();
     }
+};
 
-    // 포장 점검 - 제품 바코드 엔터
-    boxProductInput.onkeydown = function(e) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            if (boxProductInput.value.trim() === productBarcode) {
-                isBoxProductOK = true;
-                boxBarcodeInput.value = "";
-                boxBarcodeInput.focus();
-            } else {
-                isBoxProductOK = false;
-                flashBlink("#ff2222", "#fff", "오류");
-                sendErrorLog("box");
-                setTimeout(() => {
-                    boxProductInput.value = "";
-                    boxProductInput.focus();
-                }, 3000);
-            }
-        }
-    };
-
-// 포장 점검 - 박스 바코드 엔터
+// 포장 점검 - 박스 바코드 엔터 (두 바코드 모두 길이 슬라이스 적용)
 boxBarcodeInput.onkeydown = function(e) {
     if (e.key === "Enter") {
         e.preventDefault();
-        const scanVal = boxBarcodeInput.value.trim();
+        let scanVal = boxBarcodeInput.value.trim();
+        const validBox = scanVal.slice(0, boxBarcodeLen) === boxBarcode;
+        const validProduct = scanVal.slice(0, productBarcodeLen) === productBarcode;
 
-        // 박스 바코드 OR 제품 바코드 둘 다 OK!
-        if (isBoxProductOK && (scanVal === boxBarcode || scanVal === productBarcode)) {
+        if (isBoxProductOK && (validBox || validProduct)) {
             flashBlink("#38c172", "#fff", "정상");
-            document.getElementById('soundNext').play();  // ✅ NEXT.MP3 재생
-            sendSuccessLog("box");                        // ✅ 성공 로그 추가
+            playSound(soundNext);
+            sendSuccessLog("box");
         } else {
             flashBlink("#ff2222", "#fff", "오류");
             sendErrorLog("box");
         }
-        setTimeout(() => {
-            isBoxProductOK = false;
-            boxProductInput.value = "";
-            boxBarcodeInput.value = "";
-            boxProductInput.focus();
-        }, 3000);
+
+        // ✅ 성공/실패 모두 즉시 입력란 초기화 및 포커스 이동
+        isBoxProductOK = false;
+        boxProductInput.value = "";
+        boxBarcodeInput.value = "";
+        boxProductInput.focus();
+        // flashArea는 3초 후 자동 리셋 (기존 flashBlink의 setTimeout 유지)
     }
 };
 
-    // flash/사운드 및 리셋
-    function flashBlink(bg, color, text) {
-        flashArea.style.background = bg;
-        flashArea.style.color = color;
-        flashArea.innerText = text;
-        if (bg === "#38c172") document.getElementById('soundSuccess').play();
-        if (bg === "#ff2222") document.getElementById('soundError').play();
-        setTimeout(resetFlash, 3000);
+// flash/사운드 및 리셋
+function flashBlink(bg, color, text) {
+    flashArea.style.background = bg;
+    flashArea.style.color = color;
+    flashArea.innerText = text;
+    if (bg === "#38c172") {
+        playSound(soundSuccess);
     }
-    function resetFlash() {
-        flashArea.style.background = "#eee";
-        flashArea.style.color = "#555";
-        flashArea.innerText = "";
+    if (bg === "#ff2222") {
+        playSound(soundError);
     }
+    setTimeout(resetFlash, 3000);
+}
+function resetFlash() {
+    flashArea.style.background = "#eee";
+    flashArea.style.color = "#555";
+    flashArea.innerText = "";
+}
 
-    // Ajax 오류 로그 저장
-    function sendErrorLog(checkType) {
-        fetch("/product-check/save-error-log/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "X-CSRFToken": getCookie('csrftoken')
-            },
-            body: `product_id=${productId}&check_type=${checkType}`
-        });
+// 사운드 파일 연속 재생 보장용 함수 (모든 mp3에 일관적용)
+function playSound(audioObj) {
+    try {
+        audioObj.pause();
+        audioObj.currentTime = 0;
+        audioObj.play();
+    } catch (e) {
+        // 브라우저 정책 등으로 인한 예외는 무시 (사운드 미지원 등)
     }
+}
 
-    // Ajax 성공 로그 저장
-    function sendSuccessLog(checkType) {
-        fetch("/product-check/save-success-log/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "X-CSRFToken": getCookie('csrftoken')
-            },
-            body: `product_id=${productId}&check_type=${checkType}`
-        });
-    }
+// Ajax 오류 로그 저장
+function sendErrorLog(checkType) {
+    fetch("/product-check/save-error-log/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCookie('csrftoken')
+        },
+        body: `product_id=${productId}&check_type=${checkType}`
+    });
+}
 
-    // CSRF 토큰
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
+// Ajax 성공 로그 저장
+function sendSuccessLog(checkType) {
+    fetch("/product-check/save-success-log/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCookie('csrftoken')
+        },
+        body: `product_id=${productId}&check_type=${checkType}`
+    });
+}
+
+// CSRF 토큰
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
         }
-        return cookieValue;
     }
+    return cookieValue;
+}
 </script>
+
 
 </body>
 </html>
